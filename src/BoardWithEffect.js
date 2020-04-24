@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+// LOOK AT THE Board.js FILE FIRST!
+
+import React, { useState, useEffect } from 'react';
 import './Board.css';
 
-// What's this? When using string comparisons, it's often a good idea to store them in a variable
-// to avoid typos and allow your IDE to pick them up for you
-// so no 'X' !== 'x' issues if you forget to capitalize
 const X = 'X';
 const O = 'O';
 
@@ -21,8 +20,10 @@ const Square = ({ idx, squares, setSquares, currentPlayer, setCurrentPlayer, win
 }
 
 const Board = () => {
-    const [squares, setSquares] = useState(Array(9).fill(''))
+    const [squares, setSquares] = useState(Array(9).fill(''));
     const [currentPlayer, setCurrentPlayer] = useState(X);
+    const [winner, setWinner] = useState(undefined);
+    const [isDraw, setIsDraw] = useState(false);
 
     const checkForWinner = () => {
         const wins = ['012', '345', '678', '036', '147', '258', '048', '246'];
@@ -31,25 +32,19 @@ const Board = () => {
             return wins.some(winSet => (
                 winSet.split('').every(squareIdx => squares[squareIdx] === pieceType)
             ));
-        }
+        };
 
-        return [X, O].filter(doesPieceHaveAFullWinningSet)[0];
+        setWinner([X, O].filter(doesPieceHaveAFullWinningSet)[0]);
     }
 
     const reset = () => setSquares(Array(9).fill(''))
 
-    // Why aren't these state values? When a value can be derived entirely from other pieces
-    // of state, it's sometimes better to calculate it out instead of storing it in state.
-    // This avoids endless-render traps when dealing with updating props
-    const winner = checkForWinner();
-    const draw = squares.every(Boolean)
-    // EXPLAIN:
-    // if we had [winner, setWinner] when we run setWinner(checkForWinner), it would update state
-    // and trigger a rerender of Board...which would then run setWinner again and start all over.
-    // that's not good! It may seem odd to have such a "state-y" value not be in state, but it's fine for now.
-    // But...You're right to notice this feels off, surely we have a way to stop endless rerenders?
-    // We do! It's called useEffect, and to see how it changes things, check out the other Board file
-    // by uncommenting it in the index.js file!
+    // Look at this! Now we have useEffect! Now we only run checkForWinner if the squares change,
+    // and since squares only change once per turn, we have a hard stop to our renders
+    // Remember, you don't want useEffect's callback to return something unless it's a cleanup function
+    // that's why there are { } on the second inline function, to block the arrows implicit return
+    useEffect(checkForWinner, [squares]);
+    useEffect(() => { setIsDraw(squares.every(Boolean)) }, [squares]);
 
     return (
         <div id="app">
@@ -67,7 +62,7 @@ const Board = () => {
                         winner={winner}
                     />)
                 }
-                { (winner || draw) && <button id="reset" onClick={reset}>Restart!</button> }
+                { (winner || isDraw) && <button id="reset" onClick={reset}>Restart!</button> }
             </div>
             <h1>{winner && `${winner} Wins!`}</h1>
         </div>
