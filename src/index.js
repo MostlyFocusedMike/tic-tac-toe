@@ -7,7 +7,7 @@ import BoardWithEffect from './BoardWithEffect';
 ReactDOM.render(
   <React.StrictMode>
     <Board />
-    {/* <BoardWithEffect /> */}
+    <BoardWithEffect />
   </React.StrictMode>,
   document.getElementById('root')
 );

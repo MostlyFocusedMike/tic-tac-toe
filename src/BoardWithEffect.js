@@ -6,17 +6,9 @@ import './Board.css';
 const X = 'X';
 const O = 'O';
 
-const Square = ({ idx, squares, setSquares, currentPlayer, setCurrentPlayer, winner }) => {
-    const handleClick = () => {
-        if (!squares[idx] && !winner) {
-            const newSquares = [...squares];
-            newSquares[idx] = currentPlayer;
-            setSquares(newSquares)
-            setCurrentPlayer(currentPlayer === X ? O : X)
-        }
-    }
-
-    return <button onClick={handleClick}>{squares[idx]}</button>;
+const Square = ({ idx, place, handleClick }) => {
+    const onClick = () => handleClick(idx);
+    return <button onClick={onClick}>{place}</button>;
 }
 
 const Board = () => {
@@ -39,6 +31,15 @@ const Board = () => {
 
     const reset = () => setSquares(Array(9).fill(''))
 
+    const handleClick = (idx) => {
+        if (!squares[idx] && !winner) {
+            const newSquares = [...squares];
+            newSquares[idx] = currentPlayer;
+            setSquares(newSquares)
+            setCurrentPlayer(currentPlayer === X ? O : X)
+        }
+    }
+
     // Look at this! Now we have useEffect! Now we only run checkForWinner if the squares change,
     // and since squares only change once per turn, we have a hard stop to our renders
     // Remember, you don't want useEffect's callback to return something unless it's a cleanup function
@@ -55,11 +56,8 @@ const Board = () => {
                     squares.map((square, idx) => <Square
                         key={idx}
                         idx={idx}
-                        squares={squares}
-                        setSquares={setSquares}
-                        currentPlayer={currentPlayer}
-                        setCurrentPlayer={setCurrentPlayer}
-                        winner={winner}
+                        place={squares[idx]}
+                        handleClick={handleClick}
                     />)
                 }
                 { (winner || isDraw) && <button id="reset" onClick={reset}>Restart!</button> }

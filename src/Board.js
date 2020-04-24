@@ -7,17 +7,9 @@ import './Board.css';
 const X = 'X';
 const O = 'O';
 
-const Square = ({ idx, squares, setSquares, currentPlayer, setCurrentPlayer, winner }) => {
-    const handleClick = () => {
-        if (!squares[idx] && !winner) {
-            const newSquares = [...squares];
-            newSquares[idx] = currentPlayer;
-            setSquares(newSquares)
-            setCurrentPlayer(currentPlayer === X ? O : X)
-        }
-    }
-
-    return <button onClick={handleClick}>{squares[idx]}</button>;
+const Square = ({ idx, place, handleClick}) => {
+    const onClick = () => handleClick(idx);
+    return <button onClick={onClick}>{place}</button>;
 }
 
 const Board = () => {
@@ -38,6 +30,14 @@ const Board = () => {
 
     const reset = () => setSquares(Array(9).fill(''))
 
+    const handleClick = (idx) => {
+        if (!squares[idx] && !winner) {
+            const newSquares = [...squares];
+            newSquares[idx] = currentPlayer;
+            setSquares(newSquares)
+            setCurrentPlayer(currentPlayer === X ? O : X)
+        }
+    }
     // Why aren't these state values? When a value can be derived entirely from other pieces
     // of state, it's sometimes better to calculate it out instead of storing it in state.
     // This avoids endless-render traps when dealing with updating props
@@ -60,11 +60,8 @@ const Board = () => {
                     squares.map((square, idx) => <Square
                         key={idx}
                         idx={idx}
-                        squares={squares}
-                        setSquares={setSquares}
-                        currentPlayer={currentPlayer}
-                        setCurrentPlayer={setCurrentPlayer}
-                        winner={winner}
+                        handleClick={handleClick}
+                        place={squares[idx]}
                     />)
                 }
                 { (winner || draw) && <button id="reset" onClick={reset}>Restart!</button> }
@@ -75,3 +72,9 @@ const Board = () => {
 }
 
 export default Board;
+
+// squares={squares}
+// setSquares={setSquares}
+// currentPlayer={currentPlayer}
+// setCurrentPlayer={setCurrentPlayer}
+// winner={winner}
