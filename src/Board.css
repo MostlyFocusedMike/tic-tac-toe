@@ -1,0 +1,16 @@
+h1, h3 {
+  text-align: center;
+}
+
+#board {
+    width: 65px;
+    margin: auto;
+}
+
+button {
+    width: 20px;
+}
+
+#reset {
+    width: auto;
+}
